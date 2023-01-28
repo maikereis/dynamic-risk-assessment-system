@@ -1,0 +1,19 @@
+schema: '2.0'
+stages:
+  ingest:
+    cmd: python src/ingestion.py data/practicedata data/ingesteddata
+    deps:
+    - path: data/practicedata
+      md5: a658ff13b77b8de818f1521c7cd41e2a.dir
+      size: 766
+      nfiles: 3
+    - path: src/ingestion.py
+      md5: 0d2459516a3ea62c86c31506078e1ddb
+      size: 1131
+    outs:
+    - path: data/ingesteddata/finaldata.csv
+      md5: e560d7416c492536808193f907c04e83
+      size: 522
+    - path: data/ingesteddata/ingesteddata.txt
+      md5: cd42c89c4aa3ea3772a281b8798e5816
+      size: 26

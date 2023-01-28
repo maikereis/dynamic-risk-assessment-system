@@ -1,0 +1,12 @@
+vars:
+  - config.json
+
+stages:
+  ingest:
+    cmd: python src/ingestion.py ${input_folder_path} ${output_folder_path}
+    deps: 
+    - src/ingestion.py
+    - ${input_folder_path}
+    outs:
+    - ${output_folder_path}/finaldata.csv
+    - ${output_folder_path}/ingesteddata.txt
