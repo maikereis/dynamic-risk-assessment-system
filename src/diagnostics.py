@@ -1,9 +1,10 @@
 
-import pandas as pd
-import numpy as np
-import timeit
-import os
 import json
+import os
+import timeit
+
+import numpy as np
+import pandas as pd
 
 ##################Load config.json and get environment variables
 with open('config.json','r') as f:

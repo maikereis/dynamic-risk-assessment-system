@@ -10,3 +10,13 @@ stages:
     outs:
     - ${output_folder_path}/finaldata.csv
     - ${output_folder_path}/ingesteddata.txt
+
+  train:
+    cmd: python src/training.py ${output_folder_path} ${output_model_path} 
+    deps: 
+    - src/ingestion.py
+    - ${input_folder_path}
+    params:
+    - train
+    outs:
+    - ${output_model_path}/trainedmodel.pkl

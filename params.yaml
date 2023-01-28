@@ -1,0 +1,8 @@
+train:
+    drop: corporation
+    features: [
+            lastmonth_activity,
+            lastyear_activity,
+            number_of_employees
+        ]
+    target: exited

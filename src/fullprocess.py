@@ -1,10 +1,10 @@
 
 
-import training
-import scoring
 import deployment
 import diagnostics
 import reporting
+import scoring
+import training
 
 ##################Check and read new data
 #first, read ingestedfiles.txt
@@ -31,10 +31,3 @@ import reporting
 
 ##################Diagnostics and reporting
 #run diagnostics.py and reporting.py for the re-deployed model
-
-
-
-
-
-
-

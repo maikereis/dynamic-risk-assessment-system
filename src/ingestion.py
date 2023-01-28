@@ -1,7 +1,8 @@
-import typer
-import pandas as pd
-from pathlib import Path
 from itertools import chain
+from pathlib import Path
+
+import pandas as pd
+import typer
 
 
 def merge_multiple_dataframe(input_folder_path: Path, output_folder_path: Path):

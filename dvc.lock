@@ -8,8 +8,8 @@ stages:
       size: 766
       nfiles: 3
     - path: src/ingestion.py
-      md5: 9bbc5d9003b50931774e1164cad4e47b
-      size: 1009
+      md5: 2239ae7608386dedd0b668c936823a6a
+      size: 1011
     outs:
     - path: data/ingesteddata/finaldata.csv
       md5: e560d7416c492536808193f907c04e83
@@ -17,3 +17,26 @@ stages:
     - path: data/ingesteddata/ingesteddata.txt
       md5: cd42c89c4aa3ea3772a281b8798e5816
       size: 26
+  train:
+    cmd: python src/training.py data/ingesteddata data/practicemodels
+    deps:
+    - path: data/practicedata
+      md5: a658ff13b77b8de818f1521c7cd41e2a.dir
+      size: 766
+      nfiles: 3
+    - path: src/ingestion.py
+      md5: 2239ae7608386dedd0b668c936823a6a
+      size: 1011
+    params:
+      params.yaml:
+        train:
+          drop: corporation
+          features:
+          - lastmonth_activity
+          - lastyear_activity
+          - number_of_employees
+          target: exited
+    outs:
+    - path: data/practicemodels/trainedmodel.pkl
+      md5: 1d37cfc12a45219b372a2f1f8369b062
+      size: 811
