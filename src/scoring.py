@@ -1,24 +1,44 @@
-import json
-import os
-import pickle
+from pathlib import Path
 
-import numpy as np
 import pandas as pd
-from flask import Flask, jsonify, request, session
+import typer
+import yaml
+from joblib import load
 from sklearn import metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
-#################Load config.json and get path variables
-with open('config.json','r') as f:
-    config = json.load(f) 
 
-dataset_csv_path = os.path.join(config['output_folder_path']) 
-test_data_path = os.path.join(config['test_data_path']) 
+def score_model(model_path: Path, dataset_csv_path: Path):
+
+    # use the same parameter as in training
+    with open("params.yaml", "r") as file:
+        params = yaml.load(file, Loader=yaml.SafeLoader)
+        drop_col = params["train"]["drop"]
+        features = params["train"]["features"]
+        target = params["train"]["target"]
+
+    model = load(model_path / "trainedmodel.pkl")
+
+    test_data = pd.read_csv(dataset_csv_path / "testdata.csv")
+
+    # drop unnused column
+    test_data = test_data.drop(drop_col, axis=1)
+
+    # split into features and target
+    X = test_data[features]
+    y_true = test_data[target]
+
+    # make predictions
+    y_pred = model.predict(X)
+
+    # score model
+    f1_score_value = metrics.f1_score(y_true, y_pred)
+
+    # saving score
+    with open(model_path / "latestscore.txt", "a") as f:
+        f.write(f"{f1_score_value}")
 
 
-#################Function for model scoring
-def score_model():
-    #this function should take a trained model, load test data, and calculate an F1 score for the model relative to the test data
-    #it should write the result to the latestscore.txt file
-
+if __name__ == "__main__":
+    typer.run(score_model)
