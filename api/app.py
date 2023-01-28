@@ -1,14 +1,13 @@
-from flask import Flask, session, jsonify, request
-import pandas as pd
-import numpy as np
-import pickle
-import create_prediction_model
-import diagnosis 
-import predict_exited_from_saved_model
 import json
 import os
+import pickle
 
-
+import create_prediction_model
+import diagnosis
+import numpy as np
+import pandas as pd
+import predict_exited_from_saved_model
+from flask import Flask, jsonify, request, session
 
 ######################Set up variables for use in our script
 app = Flask(__name__)

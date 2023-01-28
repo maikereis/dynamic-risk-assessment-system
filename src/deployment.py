@@ -1,26 +1,30 @@
-import json
-import os
-import pickle
+import shutil
+from pathlib import Path
 
-import numpy as np
-import pandas as pd
-from flask import Flask, jsonify, request, session
-from sklearn import metrics
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-
-##################Load config.json and correct path variable
-with open('config.json','r') as f:
-    config = json.load(f) 
-
-dataset_csv_path = os.path.join(config['output_folder_path']) 
-prod_deployment_path = os.path.join(config['prod_deployment_path']) 
+import typer
 
 
-####################function for deployment
-def store_model_into_pickle(model):
-    #copy the latest pickle file, the latestscore.txt value, and the ingestfiles.txt file into the deployment directory
-        
-        
-        
+def store_model_into_pickle(
+    dataset_csv_path: Path, model_path: Path, prod_deployment_path: Path
+):
+    prod_deployment_path.mkdir(parents=True, exist_ok=True)
 
+    files_to_copy = [
+        ("ingesteddata.txt", "ingesteddata.txt"),
+        ("latestscore.txt", "latestscore.txt"),
+        ("trainedmodel.pkl", "trainedmodel.pkl"),
+    ]
+
+    for src_file, dest_file in files_to_copy:
+        src = (
+            (dataset_csv_path / src_file)
+            if "ingesteddata" in src_file
+            else (model_path / src_file)
+        )
+        dest = prod_deployment_path / dest_file
+
+        shutil.copy(src, dest)
+
+
+if __name__ == "__main__":
+    typer.run(store_model_into_pickle)

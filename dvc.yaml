@@ -30,3 +30,12 @@ stages:
     - train
     outs:
     - ${output_model_path}/latestscore.txt
+
+  deploy:
+    cmd: python src/deployment.py ${output_folder_path} ${output_model_path} ${prod_deployment_path} 
+    deps: 
+    - src/deployment.py
+    outs:
+    - ${prod_deployment_path}/ingesteddata.txt
+    - ${prod_deployment_path}/latestscore.txt
+    - ${prod_deployment_path}/trainedmodel.pkl

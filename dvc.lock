@@ -47,8 +47,8 @@ stages:
       md5: 2b130a79cba17e373f5642ae772df29c
       size: 164
     - path: src/scoring.py
-      md5: adc50f6540d62c95019141315cf3137d
-      size: 1054
+      md5: 6dee35d4df20172ae8817aeb2d14ec1b
+      size: 1152
     params:
       params.yaml:
         train:
@@ -62,3 +62,19 @@ stages:
     - path: data/practicemodels/latestscore.txt
       md5: b9d98b4b4b857b924f1e6cb579dd41fb
       size: 18
+  deploy:
+    cmd: python src/deployment.py data/ingesteddata data/practicemodels data/production_deployment
+    deps:
+    - path: src/deployment.py
+      md5: 1de6576721d65e578a16887257425e43
+      size: 743
+    outs:
+    - path: data/production_deployment/ingesteddata.txt
+      md5: cd42c89c4aa3ea3772a281b8798e5816
+      size: 26
+    - path: data/production_deployment/latestscore.txt
+      md5: b9d98b4b4b857b924f1e6cb579dd41fb
+      size: 18
+    - path: data/production_deployment/trainedmodel.pkl
+      md5: 1d37cfc12a45219b372a2f1f8369b062
+      size: 811
