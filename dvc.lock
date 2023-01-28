@@ -8,8 +8,8 @@ stages:
       size: 766
       nfiles: 3
     - path: src/ingestion.py
-      md5: 0d2459516a3ea62c86c31506078e1ddb
-      size: 1131
+      md5: 9bbc5d9003b50931774e1164cad4e47b
+      size: 1009
     outs:
     - path: data/ingesteddata/finaldata.csv
       md5: e560d7416c492536808193f907c04e83

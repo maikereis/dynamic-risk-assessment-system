@@ -1,15 +1,7 @@
 import typer
-from typing import Optional
-
-import os
-import json
-import numpy as np
 import pandas as pd
-from datetime import datetime
 from pathlib import Path
 from itertools import chain
-
-import typer
 
 
 def merge_multiple_dataframe(input_folder_path: Path, output_folder_path: Path):
