@@ -1,44 +1,42 @@
+import json
 from pathlib import Path
-
-import pandas as pd
 import typer
-import yaml
 from joblib import load
 from sklearn import metrics
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
+
+from src.utils import preprocess_data
+
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+data_folder_path = Path(config["test_data_path"])
+model_folder_path = Path(config["output_model_path"])
+
+data_file_path = data_folder_path / "testdata.csv"
+model_file_path = model_folder_path / "trainedmodel.pkl"
 
 
-def score_model(model_path: Path, dataset_csv_path: Path):
+def score_model():
 
-    # use the same parameter as in training
-    with open("params.yaml", "r") as file:
-        params = yaml.load(file, Loader=yaml.SafeLoader)
-        drop_col = params["train"]["drop"]
-        features = params["train"]["features"]
-        target = params["train"]["target"]
+    model = load(model_file_path)
 
-    model = load(model_path / "trainedmodel.pkl")
-
-    test_data = pd.read_csv(dataset_csv_path / "testdata.csv")
-
-    # drop unnused column
-    test_data = test_data.drop(drop_col, axis=1)
-
-    # split into features and target
-    X = test_data[features]
-    y_true = test_data[target]
+    X_test, y_test = preprocess_data(data_file_path)
 
     # make predictions
-    y_pred = model.predict(X)
+    y_pred = model.predict(X_test)
 
     # score model
-    f1_score_value = metrics.f1_score(y_true, y_pred)
+    f1_score_value = metrics.f1_score(y_test, y_pred)
 
     # saving score
-    with open(model_path / "latestscore.txt", "a") as f:
+    with open(model_folder_path / "latestscore.txt", "a") as f:
         f.write(f"{f1_score_value}")
+
+    return f1_score_value
 
 
 if __name__ == "__main__":
-    typer.run(score_model)
+    try:
+        typer.run(score_model)
+    except ValueError as e:
+        print(f"An error occurred: {e}")
