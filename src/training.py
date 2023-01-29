@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import List
-
+import json
 import pandas as pd
 import typer
 import yaml
@@ -8,15 +8,25 @@ from joblib import dump
 from sklearn import metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+from utils import preprocess_data
+
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+data_folder_path = Path(config["output_folder_path"])
+model_folder_path = Path(config["output_model_path"])
+
+data_file_path = data_folder_path / "finaldata.csv"
+model_file_path = model_folder_path / "trainedmodel.pkl"
 
 
 def train_model(
-    dataset_csv_path: Path,
-    model_path: Path,
+    data_file_path: Path = data_file_path,
+    model_file_path: Path = model_file_path,
 ):
 
     # create model folder
-    Path(model_path).mkdir(exist_ok=True)
+    Path(model_file_path).parent.mkdir(exist_ok=True)
 
     with open("params.yaml", "r") as file:
         params = yaml.load(file, Loader=yaml.SafeLoader)
@@ -24,13 +34,7 @@ def train_model(
         features = params["train"]["features"]
         target = params["train"]["target"]
 
-    train_data = pd.read_csv(dataset_csv_path / "finaldata.csv")
-
-    # drop unnused column
-    train_data = train_data.drop(drop_col, axis=1)
-
-    X = train_data[features]
-    y = train_data[target]
+    X, y = preprocess_data(data_file_path)
 
     # use this logistic regression for training
     lr = LogisticRegression(
@@ -55,7 +59,8 @@ def train_model(
     lr.fit(X, y)
 
     # write the trained model to your workspace in a file called trainedmodel.pkl
-    dump(lr, model_path / "trainedmodel.pkl")
+    print(model_file_path)
+    dump(lr, model_file_path)
 
 
 if __name__ == "__main__":

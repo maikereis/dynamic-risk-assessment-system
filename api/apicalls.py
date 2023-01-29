@@ -35,5 +35,5 @@ responses.append(response3.text)
 responses.append(response4.text)
 
 for response in responses:
-    with open(responses_file_path, "a") as f:
+    with open(responses_file_path, "w") as f:
         f.write(response + "\n")

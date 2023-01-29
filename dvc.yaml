@@ -3,7 +3,7 @@ vars:
 
 stages:
   ingest:
-    cmd: python src/ingestion.py ${input_folder_path} ${output_folder_path}
+    cmd: python src/ingestion.py
     deps: 
     - src/ingestion.py
     - ${input_folder_path}
@@ -12,7 +12,7 @@ stages:
     - ${output_folder_path}/ingesteddata.txt
 
   train:
-    cmd: python src/training.py ${output_folder_path} ${output_model_path} 
+    cmd: python src/training.py
     deps: 
     - src/ingestion.py
     - ${output_folder_path}/finaldata.csv
@@ -22,7 +22,7 @@ stages:
     - ${output_model_path}/trainedmodel.pkl
 
   scoring:
-    cmd: python src/scoring.py ${output_model_path} ${test_data_path} 
+    cmd: python src/scoring.py
     deps: 
     - src/scoring.py
     - ${test_data_path}/testdata.csv
@@ -33,7 +33,7 @@ stages:
     - ${output_model_path}/latestscore.txt
 
   deploy:
-    cmd: python src/deployment.py ${output_folder_path} ${output_model_path} ${prod_deployment_path} 
+    cmd: python src/deployment.py 
     deps: 
     - src/deployment.py
     - ${output_folder_path}/ingesteddata.txt

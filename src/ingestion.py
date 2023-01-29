@@ -1,35 +1,48 @@
-from itertools import chain
-from pathlib import Path
-
+import json
 import pandas as pd
-import typer
+from pathlib import Path
+from itertools import chain
+
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+input_folder_path = Path(config["input_folder_path"])
+output_folder_path = Path(config["output_folder_path"])
+ingested_file_path = output_folder_path / "ingesteddata.txt"
+output_file_path = output_folder_path / "finaldata.csv"
 
 
-def merge_multiple_dataframe(input_folder_path: Path, output_folder_path: Path):
+def merge_multiple_dataframe():
+    # Create the output folder if it doesn't exist
+    output_folder_path.mkdir(exist_ok=True)
 
-    # create output folder
-    Path(output_folder_path).mkdir(exist_ok=True)
-
-    # search for csv and txt files
-    paths = chain(input_folder_path.glob("*.csv"), input_folder_path.glob("*.txt"))
+    # Search for CSV and TXT files
+    file_paths = chain(
+        input_folder_path.glob("*.csv"), input_folder_path.glob("*.json")
+    )
 
     parts = []
+    file_names = []
+    for file_path in file_paths:
+        if file_path.suffix in [".json", ".csv"]:
+            data_part = (
+                pd.read_json(file_path)
+                if file_path.suffix == ".json"
+                else pd.read_csv(file_path)
+            )
+            parts.append(data_part)
+            file_names.append(file_path.name)
 
-    # read each file and append in a list
-    for file_path in paths:
-        if file_path.suffix == ".json":
-            data_part = pd.read_json(file_path)
-        elif file_path.suffix == ".csv":
-            data_part = pd.read_csv(file_path)
-        parts.append(data_part)
-        with open(output_folder_path / "ingesteddata.txt", "a") as f:
-            f.write(file_path.name + "\n")
+    # Write the file names to the ingested file
+    with open(ingested_file_path, "w") as f:
+        f.write("\n".join(file_names))
 
-    data = pd.concat(parts)
-    data = data.drop_duplicates()
+    # Concatenate all the data parts and drop duplicates
+    data = pd.concat(parts).drop_duplicates()
 
-    data.to_csv(output_folder_path / "finaldata.csv", index=False)
+    # Write the final data to a CSV file
+    data.to_csv(output_file_path, index=False)
 
 
 if __name__ == "__main__":
-    typer.run(merge_multiple_dataframe)
+    merge_multiple_dataframe()

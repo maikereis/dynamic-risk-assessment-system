@@ -21,7 +21,9 @@ img_folder_path = Path(config["output_model_path"])
 img_file_path = img_folder_path / "confusionmatrix.png"
 
 
-def score_model():
+def score_model(
+    data_file_path: Path = data_file_path, img_file_path: Path = img_file_path
+):
     X, y_true = preprocess_data(data_file_path)
 
     y_pred = model_predictions(X)

@@ -1,31 +1,31 @@
 schema: '2.0'
 stages:
   ingest:
-    cmd: python src/ingestion.py data/practicedata data/ingesteddata
+    cmd: python src/ingestion.py
     deps:
     - path: data/practicedata
       md5: a658ff13b77b8de818f1521c7cd41e2a.dir
       size: 766
       nfiles: 3
     - path: src/ingestion.py
-      md5: 2239ae7608386dedd0b668c936823a6a
-      size: 1011
+      md5: 42864b76d12dc728c6cb9f933adc1838
+      size: 1451
     outs:
     - path: data/ingesteddata/finaldata.csv
       md5: e560d7416c492536808193f907c04e83
       size: 522
     - path: data/ingesteddata/ingesteddata.txt
-      md5: cd42c89c4aa3ea3772a281b8798e5816
-      size: 26
+      md5: 2f5fc50b7bdc512bf1dfb6159f1e44fd
+      size: 25
   train:
-    cmd: python src/training.py data/ingesteddata data/practicemodels
+    cmd: python src/training.py
     deps:
     - path: data/ingesteddata/finaldata.csv
       md5: e560d7416c492536808193f907c04e83
       size: 522
     - path: src/ingestion.py
-      md5: 2239ae7608386dedd0b668c936823a6a
-      size: 1011
+      md5: 42864b76d12dc728c6cb9f933adc1838
+      size: 1451
     params:
       params.yaml:
         train:
@@ -40,7 +40,7 @@ stages:
       md5: 1d37cfc12a45219b372a2f1f8369b062
       size: 811
   scoring:
-    cmd: python src/scoring.py data/practicemodels data/testdata
+    cmd: python src/scoring.py
     deps:
     - path: data/practicemodels/trainedmodel.pkl
       md5: 1d37cfc12a45219b372a2f1f8369b062
@@ -49,8 +49,8 @@ stages:
       md5: 2b130a79cba17e373f5642ae772df29c
       size: 164
     - path: src/scoring.py
-      md5: 6dee35d4df20172ae8817aeb2d14ec1b
-      size: 1152
+      md5: 9e7e642d03e1a80296ae7d1269050534
+      size: 1159
     params:
       params.yaml:
         train:
@@ -65,11 +65,11 @@ stages:
       md5: b9d98b4b4b857b924f1e6cb579dd41fb
       size: 18
   deploy:
-    cmd: python src/deployment.py data/ingesteddata data/practicemodels data/production_deployment
+    cmd: python src/deployment.py
     deps:
     - path: data/ingesteddata/ingesteddata.txt
-      md5: cd42c89c4aa3ea3772a281b8798e5816
-      size: 26
+      md5: 2f5fc50b7bdc512bf1dfb6159f1e44fd
+      size: 25
     - path: data/practicemodels/latestscore.txt
       md5: b9d98b4b4b857b924f1e6cb579dd41fb
       size: 18
@@ -77,12 +77,12 @@ stages:
       md5: 1d37cfc12a45219b372a2f1f8369b062
       size: 811
     - path: src/deployment.py
-      md5: 1de6576721d65e578a16887257425e43
-      size: 743
+      md5: a9bd03270e0a77bd4223e83769098e3f
+      size: 1078
     outs:
     - path: data/production_deployment/ingesteddata.txt
-      md5: cd42c89c4aa3ea3772a281b8798e5816
-      size: 26
+      md5: 2f5fc50b7bdc512bf1dfb6159f1e44fd
+      size: 25
     - path: data/production_deployment/latestscore.txt
       md5: b9d98b4b4b857b924f1e6cb579dd41fb
       size: 18

@@ -15,9 +15,14 @@ model_folder_path = Path(config["output_model_path"])
 
 data_file_path = data_folder_path / "testdata.csv"
 model_file_path = model_folder_path / "trainedmodel.pkl"
+score_file_path = model_folder_path / "latestscore.txt"
 
 
-def score_model():
+def score_model(
+    model_file_path: Path = model_file_path,
+    data_file_path: Path = data_file_path,
+    score_file_path: Path = score_file_path,
+):
 
     model = load(model_file_path)
 
@@ -29,9 +34,10 @@ def score_model():
     # score model
     f1_score_value = metrics.f1_score(y_test, y_pred)
 
-    # saving score
-    with open(model_folder_path / "latestscore.txt", "a") as f:
-        f.write(f"{f1_score_value}")
+    if score_file_path != None:
+        # saving score
+        with open(score_file_path, "w") as f:
+            f.write(f"{f1_score_value}")
 
     return f1_score_value
 
