@@ -15,7 +15,7 @@ stages:
     cmd: python src/training.py ${output_folder_path} ${output_model_path} 
     deps: 
     - src/ingestion.py
-    - ${input_folder_path}
+    - ${output_folder_path}/finaldata.csv
     params:
     - train
     outs:
@@ -26,6 +26,7 @@ stages:
     deps: 
     - src/scoring.py
     - ${test_data_path}/testdata.csv
+    - ${output_model_path}/trainedmodel.pkl
     params:
     - train
     outs:
@@ -35,7 +36,40 @@ stages:
     cmd: python src/deployment.py ${output_folder_path} ${output_model_path} ${prod_deployment_path} 
     deps: 
     - src/deployment.py
+    - ${output_folder_path}/ingesteddata.txt
+    - ${output_model_path}/latestscore.txt
+    - ${output_model_path}/trainedmodel.pkl
     outs:
     - ${prod_deployment_path}/ingesteddata.txt
     - ${prod_deployment_path}/latestscore.txt
     - ${prod_deployment_path}/trainedmodel.pkl
+  
+  predict:
+    cmd: python src/diagnostics.py model-predictions ${test_data_path} ${output_model_path}
+    deps:
+    - src/diagnostics.py
+    - ${output_model_path}/trainedmodel.pkl
+    params:
+    - train
+  
+  statistics:
+    cmd: python src/diagnostics.py dataframe-summary ${output_folder_path}
+    deps: 
+    - src/diagnostics.py
+
+  count_nan:
+    cmd: python src/diagnostics.py count-nan ${output_folder_path}
+    deps: 
+    - src/diagnostics.py  
+  
+  execution_time:
+    cmd: python src/diagnostics.py execution-time
+    deps: 
+    - src/diagnostics.py
+
+  check_packages:
+    cmd: python src/diagnostics.py outdated-packages-list
+    deps: 
+    - src/diagnostics.py
+
+    

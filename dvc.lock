@@ -20,10 +20,9 @@ stages:
   train:
     cmd: python src/training.py data/ingesteddata data/practicemodels
     deps:
-    - path: data/practicedata
-      md5: a658ff13b77b8de818f1521c7cd41e2a.dir
-      size: 766
-      nfiles: 3
+    - path: data/ingesteddata/finaldata.csv
+      md5: e560d7416c492536808193f907c04e83
+      size: 522
     - path: src/ingestion.py
       md5: 2239ae7608386dedd0b668c936823a6a
       size: 1011
@@ -43,6 +42,9 @@ stages:
   scoring:
     cmd: python src/scoring.py data/practicemodels data/testdata
     deps:
+    - path: data/practicemodels/trainedmodel.pkl
+      md5: 1d37cfc12a45219b372a2f1f8369b062
+      size: 811
     - path: data/testdata/testdata.csv
       md5: 2b130a79cba17e373f5642ae772df29c
       size: 164
@@ -65,6 +67,15 @@ stages:
   deploy:
     cmd: python src/deployment.py data/ingesteddata data/practicemodels data/production_deployment
     deps:
+    - path: data/ingesteddata/ingesteddata.txt
+      md5: cd42c89c4aa3ea3772a281b8798e5816
+      size: 26
+    - path: data/practicemodels/latestscore.txt
+      md5: b9d98b4b4b857b924f1e6cb579dd41fb
+      size: 18
+    - path: data/practicemodels/trainedmodel.pkl
+      md5: 1d37cfc12a45219b372a2f1f8369b062
+      size: 811
     - path: src/deployment.py
       md5: 1de6576721d65e578a16887257425e43
       size: 743
@@ -78,3 +89,45 @@ stages:
     - path: data/production_deployment/trainedmodel.pkl
       md5: 1d37cfc12a45219b372a2f1f8369b062
       size: 811
+  predict:
+    cmd: python src/diagnostics.py model-predictions data/testdata data/practicemodels
+    deps:
+    - path: data/practicemodels/trainedmodel.pkl
+      md5: 1d37cfc12a45219b372a2f1f8369b062
+      size: 811
+    - path: src/diagnostics.py
+      md5: b20e30bf41865a015465a288a2f4d90d
+      size: 2548
+    params:
+      params.yaml:
+        train:
+          drop: corporation
+          features:
+          - lastmonth_activity
+          - lastyear_activity
+          - number_of_employees
+          target: exited
+  statistics:
+    cmd: python src/diagnostics.py dataframe-summary data/ingesteddata
+    deps:
+    - path: src/diagnostics.py
+      md5: b20e30bf41865a015465a288a2f4d90d
+      size: 2548
+  count_nan:
+    cmd: python src/diagnostics.py count-nan data/ingesteddata
+    deps:
+    - path: src/diagnostics.py
+      md5: b20e30bf41865a015465a288a2f4d90d
+      size: 2548
+  execution_time:
+    cmd: python src/diagnostics.py execution-time
+    deps:
+    - path: src/diagnostics.py
+      md5: b20e30bf41865a015465a288a2f4d90d
+      size: 2548
+  check_packages:
+    cmd: python src/diagnostics.py outdated-packages-list
+    deps:
+    - path: src/diagnostics.py
+      md5: b20e30bf41865a015465a288a2f4d90d
+      size: 2548
