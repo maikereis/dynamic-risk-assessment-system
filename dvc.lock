@@ -90,14 +90,14 @@ stages:
       md5: 1d37cfc12a45219b372a2f1f8369b062
       size: 811
   predict:
-    cmd: python src/diagnostics.py model-predictions data/testdata data/practicemodels
+    cmd: python src/diagnostics.py model-predictions data/testdata/testdata.csv data/practicemodels
     deps:
     - path: data/practicemodels/trainedmodel.pkl
       md5: 1d37cfc12a45219b372a2f1f8369b062
       size: 811
     - path: src/diagnostics.py
-      md5: b20e30bf41865a015465a288a2f4d90d
-      size: 2548
+      md5: dd530105480845f76af36155b3a1a902
+      size: 2435
     params:
       params.yaml:
         train:

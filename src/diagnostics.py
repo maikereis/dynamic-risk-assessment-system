@@ -1,34 +1,27 @@
+import json
 import subprocess
 import timeit
 from pathlib import Path
-import subprocess
-import pkg_resources
-import json
+
 import numpy as np
 import pandas as pd
+import pkg_resources
 import typer
 import yaml
 from joblib import load
-from io import StringIO
 
 app = typer.Typer()
 
 
+with open("config.json", "r") as f:
+    config = json.load(f)
+    model_filepath = Path(config["output_model_path"]) / "trainedmodel.pkl"
+
+
 @app.command()
-def model_predictions(dataset_csv_path: Path, model_path: Path):
-    with open("params.yaml", "r") as file:
-        params = yaml.load(file, Loader=yaml.SafeLoader)
-        drop_col = params["train"]["drop"]
-        features = params["train"]["features"]
-
-    data = pd.read_csv(dataset_csv_path / "testdata.csv")
-
-    data = data.drop(drop_col, axis=1, errors="ignore")
-    X = data[features]
-
-    model = load(model_path / "trainedmodel.pkl")
+def model_predictions(X):
+    model = load(model_filepath)
     y_pred = model.predict(X)
-
     return y_pred
 
 
