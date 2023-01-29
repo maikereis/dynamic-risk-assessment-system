@@ -1,0 +1,4 @@
+{"model predicted":[0,1,1,1,1]}
+{"model last f1-score":0.5714285714285715}
+{"summaries":{"lastmonth_activity":{"mean":165.65384615384616,"50%":73.0,"std":284.0332293669446},"lastyear_activity":{"mean":1502.923076923077,"50%":955.0,"std":2192.64495845683},"number_of_employees":{"mean":26.884615384615383,"50%":14.0,"std":31.35388578543581},"exited":{"mean":0.5769230769230769,"50%":1.0,"std":0.5038314736557788}}}
+{"nan count":{"corporation":0.0,"lastmonth_activity":0.0,"lastyear_activity":0.0,"number_of_employees":0.0,"exited":0.0}}

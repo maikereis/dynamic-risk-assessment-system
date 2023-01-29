@@ -1,20 +1,39 @@
+import json
 import requests
+from pathlib import Path
 
-#Specify a URL that resolves to your workspace
-URL = "http://127.0.0.1/"
+DEBUG = True
 
+if DEBUG:
+    URL = "http://127.0.0.1:8080"
+else:
+    URL = "https://udacity-maike-app.herokuapp.com"
 
+with open("config.json", "r") as f:
+    config = json.load(f)
 
-#Call each API endpoint and store the responses
-response1 = #put an API call here
-response2 = #put an API call here
-response3 = #put an API call here
-response4 = #put an API call here
+responses_folder_path = Path(config["output_model_path"])
+responses_file_path = responses_folder_path / "apireturns.txt"
 
-#combine all API responses
-responses = #combine reponses here
+# Specify a URL that resolves to your workspace
+header = {"Content-Type": "application/json"}
+data = {"data_file_path": "data/testdata/testdata.csv"}
 
-#write the responses to your workspace
+# Call each API endpoint and store the responses
+response1 = requests.post(
+    "http://127.0.0.1:8080/prediction", headers=header, params=data
+)
+response2 = requests.post("http://127.0.0.1:8080/scoring")
+response3 = requests.post("http://127.0.0.1:8080/summarystats")
+response4 = requests.post("http://127.0.0.1:8080/diagnostics")
 
+responses = []
 
+responses.append(response1.text)
+responses.append(response2.text)
+responses.append(response3.text)
+responses.append(response4.text)
 
+for response in responses:
+    with open(responses_file_path, "a") as f:
+        f.write(response + "\n")

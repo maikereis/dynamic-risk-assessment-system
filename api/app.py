@@ -16,6 +16,12 @@ def read_root():
     return {"CashBack API": "Hello World!"}
 
 
+@app.post("/post")
+def post_post(q):
+    print("aaa")
+    return None
+
+
 #######################Prediction Endpoint
 @app.post("/prediction")
 def predict(data_file_path: Path):
