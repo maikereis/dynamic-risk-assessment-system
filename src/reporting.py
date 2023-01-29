@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -7,23 +8,21 @@ import typer
 import yaml
 from sklearn.metrics import confusion_matrix
 
-from diagnostics import model_predictions
+from src.diagnostics import model_predictions
+from src.utils import preprocess_data
+
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+data_folder_path = Path(config["test_data_path"])
+data_file_path = data_folder_path / "testdata.csv"
+
+img_folder_path = Path(config["output_model_path"])
+img_file_path = img_folder_path / "confusionmatrix.png"
 
 
-def score_model(dataset_csv_path: Path, output_model_path: Path):
-
-    with open("params.yaml", "r") as file:
-        params = yaml.load(file, Loader=yaml.SafeLoader)
-        drop_col = params["train"]["drop"]
-        features = params["train"]["features"]
-        target = params["train"]["target"]
-
-    data = pd.read_csv(dataset_csv_path)
-
-    data = data.drop(drop_col, axis=1, errors="ignore")
-
-    X = data[features]
-    y_true = data[target]
+def score_model():
+    X, y_true = preprocess_data(data_file_path)
 
     y_pred = model_predictions(X)
 
@@ -37,7 +36,7 @@ def score_model(dataset_csv_path: Path, output_model_path: Path):
     ax.set_title("Confusion Matrix")
     ax.xaxis.set_ticklabels(["no-exited", "exited"])
     ax.yaxis.set_ticklabels(["no-exited", "exited"])
-    plt.savefig(output_model_path / "confusionmatrix.png")
+    plt.savefig(img_file_path)
 
 
 if __name__ == "__main__":

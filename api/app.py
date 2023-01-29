@@ -1,49 +1,45 @@
-import json
-import os
-import pickle
+import secrets
+from pathlib import Path
 
-import create_prediction_model
-import diagnosis
-import numpy as np
-import pandas as pd
-import predict_exited_from_saved_model
-from flask import Flask, jsonify, request, session
+from fastapi import FastAPI
 
-######################Set up variables for use in our script
-app = Flask(__name__)
-app.secret_key = '1652d576-484a-49fd-913a-6879acfa6ba4'
+from src.diagnostics import count_nan, dataframe_summary, model_predictions
+from src.scoring import score_model
+from src.utils import preprocess_data
 
-with open('config.json','r') as f:
-    config = json.load(f) 
+secret_key = secrets.token_hex(32)
+app = FastAPI(secret_key=secret_key)
 
-dataset_csv_path = os.path.join(config['output_folder_path']) 
 
-prediction_model = None
+@app.get("/")
+def read_root():
+    return {"CashBack API": "Hello World!"}
 
 
 #######################Prediction Endpoint
-@app.route("/prediction", methods=['POST','OPTIONS'])
-def predict():        
-    #call the prediction function you created in Step 3
-    return #add return value for prediction outputs
+@app.post("/prediction")
+def predict(data_file_path: Path):
+    X, _ = preprocess_data(data_file_path)
+    y_pred = model_predictions(X)
+    return {"model predicted": y_pred.tolist()}
 
-#######################Scoring Endpoint
-@app.route("/scoring", methods=['GET','OPTIONS'])
-def stats():        
-    #check the score of the deployed model
-    return #add return value (a single F1 score number)
 
-#######################Summary Statistics Endpoint
-@app.route("/summarystats", methods=['GET','OPTIONS'])
-def stats():        
-    #check means, medians, and modes for each column
-    return #return a list of all calculated summary statistics
+@app.post("/scoring")
+def stats():
+    return {"model last f1-score": score_model()}
 
-#######################Diagnostics Endpoint
-@app.route("/diagnostics", methods=['GET','OPTIONS'])
-def stats():        
-    #check timing and percent NA values
-    return #add return value for all diagnostics
 
-if __name__ == "__main__":    
-    app.run(host='0.0.0.0', port=8000, debug=True, threaded=True)
+@app.post("/summarystats")
+def stats():
+    return {"summaries": dataframe_summary()}
+
+
+@app.post("/diagnostics")
+def stats():
+    return {"nan count": count_nan()}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run("app:app", host="127.0.0.1", reload=True, port=8080)
